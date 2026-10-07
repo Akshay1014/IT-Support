@@ -1,0 +1,312 @@
+Day 1 — Networking
+Lesson 1: What actually happens when you open a website?
+This is one of the most important concepts for Application Support / IT Support.
+If an interviewer asks:
+"What happens when you type google.com in your browser and press Enter?"
+You should be able to explain the process confidently.
+
+1. You type a website address
+Suppose you type:
+https://www.google.com
+and press Enter.
+Your browser needs to find the server where Google's website is hosted.
+But there is a problem:
+Your computer doesn't communicate with websites using names like:
+www.google.com
+It ultimately needs an IP address, something like:
+142.250.x.x
+So the first major step is DNS.
+
+2. DNS — Domain Name System
+Think of DNS as the phonebook of the internet.
+You know:
+www.google.com
+DNS helps find its IP address.
+Conceptually:
+www.google.com
+↓
+DNS
+↓
+IP address
+↓
+Google server
+For example:
+Browser
+|
+| "What is the IP of google.com?"
+↓
+DNS Server
+|
+| "Here is the IP"
+↓
+Browser
+Why is DNS important in IT Support?
+Imagine a user tells you:
+"My internet is working, but I can't open our company's website."
+You can test:
+ping google.com
+and:
+nslookup google.com
+If DNS isn't working, nslookup can help identify the problem.
+
+3. Your computer needs network information
+Before your computer can communicate properly, it needs things such as:
+IP address
+Example:
+192.168.1.10
+This identifies your device on the local network.
+Default Gateway
+Example:
+192.168.1.1
+Usually this is your router.
+It provides a path from your local network toward other networks/the internet.
+DNS Server
+Example:
+8.8.8.8
+or a company's internal DNS server.
+DHCP
+You generally don't manually enter all of this.
+A service called DHCP (Dynamic Host Configuration Protocol) can automatically provide your computer with:
+IP address
+Subnet information
+Default gateway
+DNS server
+So:
+Computer
+↓
+DHCP
+↓
+IP + Gateway + DNS information
+We'll study DHCP in detail later.
+
+4. Your browser connects to the server
+Now your computer knows where the server is.
+Because you're using:
+https://
+you're using HTTPS.
+HTTPS provides encrypted communication between your browser and the server.
+For HTTPS, the standard port is:
+443
+HTTP normally uses:
+80
+So you can remember:
+HTTP → 80
+HTTPS → 443
+
+5. TCP connection
+Before sending the application data, the computer establishes a TCP connection with the server.
+You don't need to memorize the entire networking theory yet.
+Just understand:
+TCP helps establish a reliable connection between two systems and makes sure data is delivered correctly and in order.
+You'll hear about the TCP three-way handshake:
+Client Server
+
+SYN ------------>
+<------------ SYN-ACK ACK ------------>
+    Meaning roughly:
+    Client: "Can we communicate?"
+    Server: "Yes, I can communicate."
+    Client: "Great."
+    Now the TCP connection is established.
+
+    6. HTTPS security
+    Because we're using HTTPS, there is also a TLS handshake.
+    This establishes secure encrypted communication.
+    Conceptually:
+    Browser
+    ↓
+    TCP connection
+    ↓
+    TLS/HTTPS security
+    ↓
+    Encrypted communication
+    You don't need to become a security expert for an Application Support role.
+    For now, remember:
+    HTTP is unencrypted communication, while HTTPS uses TLS to protect the communication.
+
+    7. Browser sends an HTTP request
+    Now your browser can actually request the webpage.
+    It sends something similar to:
+    GET / HTTP/1.1
+    Host: www.google.com
+    GET means:
+    "I want to retrieve something."
+    The server receives the request.
+
+    8. Server sends a response
+    The server processes the request and sends a response.
+    For example:
+    HTTP/1.1 200 OK
+    Then it sends the website's data.
+    The response may contain:
+    HTML
+    CSS
+    JavaScript
+    Images
+    Fonts
+    etc.
+
+    9. Browser builds the webpage
+    Your browser receives the files.
+    For example:
+    HTML
+    ↓
+    Page structure
+
+    CSS
+    ↓
+    Page appearance
+
+    JavaScript
+    ↓
+    Page behavior
+    The browser processes all of these and renders the webpage.
+    Eventually you see:
+    Google
+    ----------------
+    | Search |
+    ----------------
+
+    The complete picture
+    Here's the most important diagram from today's lesson:
+    You type:
+
+    https://www.google.com
+    |
+    ↓
+    Browser
+    |
+    ↓
+    DNS
+    |
+    ↓
+    Find IP address
+    |
+    ↓
+    Server IP address
+    |
+    ↓
+    TCP connection
+    |
+    ↓
+    TLS/HTTPS security
+    |
+    ↓
+    HTTP GET request
+    |
+    ↓
+    Web Server
+    |
+    ↓
+    HTTP response
+    |
+    ↓
+    HTML + CSS + JS + images
+    |
+    ↓
+    Browser
+    |
+    ↓
+    Webpage appears
+
+    Why YOU need to know this
+    This isn't just networking theory.
+    As an Application Support Engineer, you'll troubleshoot problems based on these steps.
+    For example:
+    Problem 1
+    User says:
+    "I can't open any website."
+    You might investigate:
+    Network connection?
+    ↓
+    IP address?
+    ↓
+    Gateway?
+    ↓
+    DNS?
+    ↓
+    Internet?
+
+    Problem 2
+    User says:
+    "Google works, but our company application doesn't."
+    Now you might investigate:
+    DNS
+    ↓
+    Server availability
+    ↓
+    VPN
+    ↓
+    Application server
+    ↓
+    API
+    ↓
+    Authentication
+    ↓
+    Database
+
+    Problem 3
+    User says:
+    "The application opens, but clicking Login gives an error."
+    Now you're moving toward application troubleshooting:
+    Browser
+    ↓
+    Frontend
+    ↓
+    API request
+    ↓
+    Backend
+    ↓
+    Authentication
+    ↓
+    Database
+    This is where your existing React + API knowledge becomes valuable.
+
+    🧠 Today's key terms
+    Don't try to memorize everything at once.
+    Learn these first:
+
+
+    🎯 Your first practical exercise
+    Open Terminal on your Mac.
+    Exercise 1 — Find your network information
+    Run:
+    ifconfig
+    You will see a lot of information.
+    Don't worry about understanding everything yet.
+
+    Exercise 2 — Test connectivity
+    Run:
+    ping google.com
+    You should see responses similar to:
+    64 bytes from ...
+    Press:
+    Ctrl + C
+    to stop it.
+
+    Exercise 3 — Test DNS
+    Run:
+    nslookup google.com
+    Look for something like:
+    Name: google.com
+    Address: ...
+    This is showing you the DNS lookup process we discussed.
+
+    Exercise 4 — Test the website
+    Run:
+    curl -I https://www.google.com
+    You may see something like:
+    HTTP/2 200
+    or another successful HTTP response.
+    This is especially useful for Application Support, because you're directly testing communication with a web server.
+
+    📝 Your interview answer
+    If an interviewer asks:
+    "What happens when you enter a URL into a browser?"
+    Don't give them 50 technical details.
+    Start with this:
+    "First, the browser needs to resolve the domain name to an IP address using DNS. Then it establishes a network
+    connection to the server, typically using TCP, and for HTTPS a TLS-secured connection is established. The browser
+    then sends an HTTP request to the server. The server processes the request and returns a response containing
+    resources such as HTML, CSS and JavaScript. Finally, the browser processes those resources and renders the webpage."
+    That's already a good interview-level answer.
