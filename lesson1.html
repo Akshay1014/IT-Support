@@ -310,3 +310,1006 @@ SYN ------------>
     then sends an HTTP request to the server. The server processes the request and returns a response containing
     resources such as HTML, CSS and JavaScript. Finally, the browser processes those resources and renders the webpage."
     That's already a good interview-level answer.
+
+    Your task before Lesson 2
+    Run these three commands:
+    ping google.com
+
+    nslookup google.com
+
+    curl -I https://www.google.com
+
+    Then send me the output of the three commands.
+    I'll explain your actual output line-by-line, and then we'll move to Lesson 2: IP Address, Private/Public IP, Subnet
+    Mask & Default Gateway.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    64 bytes from 142.251.42.238: icmp_seq=4 ttl=118 time=8.265 ms
+    64 bytes from 142.251.42.238: icmp_seq=5 ttl=118 time=8.967 ms
+    64 bytes from 142.251.42.238: icmp_seq=6 ttl=118 time=10.512 ms
+    64 bytes from 142.251.42.238: icmp_seq=7 ttl=118 time=8.692 ms
+    64 bytes from 142.251.42.238: icmp_seq=8 ttl=118 time=20.960 ms
+
+
+
+
+
+
+
+
+
+
+
+
+    Good! 👍 This output shows that your computer successfully reached Google's server.
+    Let's understand each part:
+    64 bytes from 142.251.42.238: icmp_seq=4 ttl=118 time=8.265 ms
+
+    1. 64 bytes
+    64 bytes
+
+    Your computer sent an ICMP packet and received a 64-byte response.
+    For our purposes, remember:
+    ping sends a small network packet to test whether another device/server is reachable.
+
+    2. 142.251.42.238
+    142.251.42.238
+
+    This is the IP address that Google responded from.
+    Notice what happened:
+    google.com
+    ↓
+    DNS
+    ↓
+    142.251.42.238
+
+    This is exactly what we discussed in Lesson 1.
+    Your computer first resolved the domain name and then communicated with the resulting IP address.
+    3. icmp_seq=4
+    icmp_seq=4
+
+    This is the sequence number of the ICMP packet.
+    You can see:
+    icmp_seq=4
+    icmp_seq=5
+    icmp_seq=6
+    icmp_seq=7
+    icmp_seq=8
+
+    So your computer is sending multiple ping requests and numbering them.
+    4. ttl=118
+    ttl=118
+
+    TTL means:
+    Time To Live
+
+    It is a value carried in an IP packet that limits how many network hops the packet can make before being discarded.
+    You don't need to calculate anything with this yet.
+    For your current level, remember:
+    TTL helps prevent packets from endlessly circulating through networks.
+
+    5. time=8.265 ms
+    This is the most interesting part for troubleshooting.
+    time=8.265 ms
+
+    It means the ping took approximately 8.3 milliseconds to make the round trip and receive a response.
+    Your results:
+    8.265 ms
+    8.967 ms
+    10.512 ms
+    8.692 ms
+    20.960 ms
+
+    These are generally quite fast.
+    The 20.960 ms response is higher than the others, but one higher response by itself isn't necessarily a problem.
+    What did we prove?
+    Your command essentially tested:
+    Your Mac
+    |
+    | ICMP
+    ↓
+    Internet
+    |
+    ↓
+    Google
+    142.251.42.238
+    |
+    | Response
+    ↓
+    Your Mac
+
+    And because you received responses:
+    64 bytes from...
+
+    we know that Google was reachable from your computer at the time of the test.
+    🚨 Important distinction for IT Support
+    Don't say:
+    "ping google.com proves that the internet is completely working."
+
+    That's too strong.
+    It proves that ICMP traffic to that destination received responses.
+    For example, a website could have a problem with:
+    - HTTP
+    - HTTPS
+    - DNS
+    - application server
+    - API
+    - authentication
+    even if ping works.
+    That's why Application Support engineers use multiple tests.
+    For example:
+    ping google.com
+    ↓
+    Is the host reachable?
+
+    nslookup google.com
+    ↓
+    Is DNS resolving?
+
+    curl -I https://google.com
+    ↓
+    Is HTTP/HTTPS responding?
+
+    This is the beginning of real troubleshooting methodology.
+    🎯 Your next exercise
+    Now run:
+    nslookup google.com
+
+    Paste the output here.
+    I'll explain every important line, and then we'll connect it directly to what you just learned about DNS.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Non-authoritative answer:
+    Name: google.com
+    Address: 142.250.134.139
+    Name: google.com
+    Address: 142.250.134.101
+    Name: google.com
+    Address: 142.250.134.138
+    Name: google.com
+    Address: 142.250.134.102
+    Name: google.com
+    Address: 142.250.134.113
+    Name: google.com
+    Address: 142.250.134.100
+
+
+
+
+
+
+
+
+
+
+
+
+    Excellent. This output is showing DNS working correctly. Let's break it down step by step.
+    1. Name: google.com
+    Name: google.com
+
+    This is the domain name you asked DNS to resolve.
+    You ran:
+    nslookup google.com
+
+    So your computer asked:
+    "What IP address belongs to google.com?"
+
+    2. Address: 142.250.134.139
+    Address: 142.250.134.139
+
+    This is one IP address returned for Google.
+    But notice you didn't get just one:
+    142.250.134.139
+    142.250.134.101
+    142.250.134.138
+    142.250.134.102
+    142.250.134.113
+    142.250.134.100
+
+    Why multiple IP addresses?
+    Large websites like Google have many servers distributed across different locations.
+    DNS can return multiple IP addresses so traffic can be distributed among different servers.
+    Conceptually:
+    google.com
+    |
+    DNS
+    |
+    ┌────────────┼────────────┐
+    ↓ ↓ ↓
+    Server 1 Server 2 Server 3
+    ↓ ↓ ↓
+    IP #1 IP #2 IP #3
+
+    This helps with things such as load distribution and availability.
+    3. Why was the IP different from your ping?
+    Earlier your ping showed:
+    142.251.42.238
+
+    But nslookup now shows:
+    142.250.134.139
+    142.250.134.101
+    ...
+
+    You might be thinking:
+    "Why didn't DNS give me the same IP?"
+
+    That's actually a great observation.
+    Large services like Google can have many IP addresses, and DNS responses can vary based on things such as:
+    - geographic location
+    - network
+    - DNS resolver
+    - load balancing
+    - server availability
+    So:
+    google.com
+    ↓
+    DNS
+    ↓
+    IP A
+    IP B
+    IP C
+    IP D
+    ...
+
+    is completely normal.
+    4. What does "Non-authoritative answer" mean?
+    You saw:
+    Non-authoritative answer:
+
+    This sounds scary, but it isn't an error.
+    It generally means the DNS server answering your query isn't the authoritative DNS server for google.com.
+    Instead, it may have obtained the information through DNS infrastructure/cache.
+    Think of it like this:
+    You
+    ↓
+    Your DNS resolver
+    ↓
+    DNS information
+    ↓
+    Google's authoritative DNS infrastructure
+
+    Your local resolver doesn't have to be the server that owns the official DNS information.
+    For your interview
+    You don't need to explain this deeply yet.
+    Simply remember:
+    "Non-authoritative" doesn't mean the DNS answer is wrong. It means the responding DNS server isn't the authoritative
+    server for that domain.
+
+    5. Connect this with your previous ping
+    Now we can see the complete process more clearly.
+    You typed:
+    ping google.com
+
+    Your computer essentially did:
+    google.com
+    ↓
+    DNS resolution
+    ↓
+    Google IP address
+    ↓
+    ICMP packet
+    ↓
+    Google server
+    ↓
+    Response
+
+    You then ran:
+    nslookup google.com
+
+    and directly asked DNS:
+    "What IP addresses does google.com resolve to?"
+
+    DNS returned several addresses.
+    🔥 This is important for your future job
+    Imagine you're working in Application Support.
+    A user says:
+    "I can't access our application."
+
+    You could start systematically:
+    Step 1 — Check DNS
+    nslookup company.com
+
+    If you get an IP:
+    company.com
+    → 10.x.x.x
+
+    DNS resolution is probably working.
+    Step 2 — Check connectivity
+    ping company.com
+
+    Step 3 — Check the actual web service
+    curl -I https://company.com
+
+    This is important because:
+    DNS working ≠ website working.
+    For example:
+    DNS ✅
+    ↓
+    IP found
+    ↓
+    Server reachable ✅
+    ↓
+    HTTPS ❌
+    ↓
+    Application unavailable
+
+    That's exactly the type of thinking we want you to develop.
+    🧠 Remember these three commands
+    Command What you're checking
+    ping google.com Can I reach the destination using ICMP?
+    nslookup google.com Can DNS resolve the domain?
+    curl -I https://google.com Does the HTTP/HTTPS service respond?
+
+
+    You are already starting to think like a support engineer rather than just memorizing networking definitions.
+    Next
+    Run:
+    curl -I https://www.google.com
+
+    Paste the output here.
+    Then I'll explain HTTP response codes, headers, 200 OK, redirects, and why curl is particularly useful for
+    Application Support.
+
+    content-type: text/html; charset=ISO-8859-1
+    content-security-policy-report-only: object-src 'none';base-uri 'self';script-src 'nonce-ZYoeyPdlk-VjAEi2D9ZeLg'
+    'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri
+    https://csp.withgoogle.com/csp/gws/other-hp
+    accept-ch: Sec-CH-Prefers-Color-Scheme
+    p3p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+    date: Tue, 06 Oct 2026 05:08:37 GMT
+    server: gws
+    x-xss-protection: 0
+    x-frame-options: SAMEORIGIN
+    expires: Tue, 06 Oct 2026 05:08:37 GMT
+    cache-control: private
+    set-cookie:
+    __Secure-STRP=ABNhA6gRpQSayVAWI9Q2ZSMwG2hMp-Mn-rcIb1ZRgMTjTuYUyY8VG--NRqHH5T712eZwyjuuEMZRKo1L6JysE1u6NTBDSytDzA;
+    expires=Tue, 06-Oct-2026 05:13:37 GMT; path=/; domain=.google.com; Secure; SameSite=strict
+    set-cookie: AEC=Aaa9EJqZ0un1DUW-sRusw1ZhV-vzr_tUikwK2v92IYkASvDL_PcsUz35gbE; expires=Sun, 04-Apr-2027 05:08:37 GMT;
+    path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax
+    set-cookie:
+    NID=Cu4BCAESoAEBOxGDSF1tvA-TxDbVp3sGwyl2Z59kgKEeA6yVSi9rYOoac8SBijUqmRADFExL5zH6d6z1_-nsWAKrqIeE32pdTq96NQ8oE24_18hdpnMT5udm5MoA-cyU-80qgBSOqDaSAR-kpBGn6_QB1-hgCHwYjEZ29Dce7Ha-pjT3OxuPloVtDsrcCxI4EwpJEcfA-YY8kCmB9BsnNGOoOpj-_Z0OKAEyRQHSrAfPiIeOUnSSWl5gfZyTOeKAPo9WZH8eMbu_6bFu4we8dan9rZuUrDZDUfLei-BKN5wdXQ5nzYRRKlnYtvJnM4JUCA;
+    expires=Wed, 07-Apr-2027 05:08:37 GMT; path=/; domain=.google.com; HttpOnly
+    alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Excellent. This is exactly the kind of output that is useful for Application Support. You successfully reached
+    Google's HTTPS server and received its HTTP response headers.
+    One important thing first: you pasted live Set-Cookie values. Those can contain session/tracking information, so
+    don't share them publicly. You can redact cookie values when practicing.
+    1. The most important thing: where is 200 OK?
+    You pasted the headers, but the first line of the curl -I response is probably above what you copied.
+    It should look something like:
+    HTTP/2 200
+
+    or:
+    HTTP/1.1 200 OK
+
+    That is the most important line.
+    200 OK
+    It means:
+    The server successfully received and processed the request.
+
+    So our test is:
+    DNS
+    ↓
+    Google IP
+    ↓
+    Network connection
+    ↓
+    HTTPS
+    ↓
+    HTTP request
+    ↓
+    200 OK ✅
+
+    That's a successful request.
+    2. content-type
+    You got:
+    content-type: text/html; charset=ISO-8859-1
+
+    This tells the browser what type of content the server is returning.
+    Here:
+    text/html
+
+    means:
+    "The response contains HTML."
+
+    And:
+    charset=ISO-8859-1
+
+    specifies the character encoding.
+    For example, an API might return:
+    content-type: application/json
+
+    That's something you'll encounter frequently in Application Support.
+    For example:
+    GET /api/users
+
+    Response:
+    Content-Type: application/json
+
+    3. date
+    You have:
+    date: Tue, 06 Oct 2026 05:08:37 GMT
+
+    This tells you when the server generated the response.
+    Notice:
+    GMT
+
+    This is a server-side timestamp in a standard time reference.
+    Why is this useful?
+    Imagine a user says:
+    "The application failed at 10:38 AM."
+
+    You look at the server logs and need to correlate the event with the request time.
+    Timestamps are extremely important when troubleshooting production issues.
+    4. server: gws
+    You received:
+    server: gws
+
+    This identifies information about the server software/infrastructure handling the request.
+    For your current level, don't worry about what Google's internal gws specifically does.
+    Just understand:
+    The Server header can provide information about the server handling the request.
+
+    5. cache-control: private
+    You received:
+    cache-control: private
+
+    This is related to caching.
+    Caching means storing a response temporarily so it doesn't always have to be retrieved again.
+    For example:
+    Browser
+    ↓
+    Cache
+    ↓
+    Website
+
+    private indicates the response is intended for a single user, rather than being shared through a public/shared
+    cache.
+    You don't need to memorize all caching directives yet.
+    6. set-cookie
+    You got several:
+    set-cookie: ...
+
+    This means the server is asking the browser to store cookies.
+    Cookies are small pieces of data associated with a website.
+    For example:
+    Browser
+    ↕
+    Cookies
+    ↕
+    Website
+
+    They can be used for things such as:
+    - sessions
+    - preferences
+    - authentication state
+    - tracking
+    Important security point
+    Your output contains actual cookie values.
+    For example:
+    set-cookie: NID=...
+
+    Don't paste these values into public forums or share them with strangers.
+    For learning, you only need to recognize:
+    Set-Cookie
+    ↓
+    Server wants browser to store/update a cookie
+
+    7. Secure
+    Inside the cookie you saw:
+    Secure
+
+    This tells the browser that the cookie should only be sent over a secure HTTPS connection.
+    That's a useful security mechanism.
+    8. HttpOnly
+    You also saw:
+    HttpOnly
+
+    This is another security-related cookie attribute.
+    It prevents normal JavaScript running in the page from directly accessing that cookie through document.cookie.
+    So conceptually:
+    Cookie
+    ↓
+    HttpOnly
+    ↓
+    JavaScript cannot directly read it
+
+    This can help reduce the impact of certain types of cookie theft through XSS.
+    9. SameSite
+    You saw:
+    SameSite=strict
+
+    and:
+    SameSite=lax
+
+    This controls when cookies are sent in cross-site situations.
+    For now, remember:
+    SameSite is a cookie security/privacy mechanism that controls cross-site cookie behavior.
+
+    We'll come back to cookies when we study authentication and application troubleshooting.
+    10. x-frame-options: SAMEORIGIN
+    You received:
+    x-frame-options: SAMEORIGIN
+
+    This is a security-related response header.
+    It helps control whether the page can be loaded inside a <frame>/<iframe> from another origin.
+            SAMEORIGIN basically means:
+            The page can be framed by pages from the same origin, but not arbitrary external origins.
+
+            You don't need to memorize this for your first networking lesson.
+            11. alt-svc
+            You received:
+            alt-svc: h3=":443"; ma=2592000
+
+            This is telling the client that an alternative service is available, including HTTP/3 (h3).
+            Don't worry about this yet.
+            It's a more advanced HTTP topic.
+            Now let's put everything together
+            You've now personally tested three different layers:
+            Test 1 — Ping
+            ping google.com
+
+            You got:
+            64 bytes from ...
+            time=8.265 ms
+
+            Meaning:
+            We received an ICMP response from Google's server.
+
+            Test 2 — DNS
+            nslookup google.com
+
+            You got multiple IP addresses.
+            Meaning:
+            DNS successfully resolved google.com.
+
+            Test 3 — HTTPS
+            curl -I https://www.google.com
+
+            You received HTTP response headers.
+            Meaning:
+            We successfully communicated with Google's HTTPS web service.
+
+            🔥 This is the troubleshooting mindset I want you to develop
+            Suppose tomorrow a user says:
+            "The company website isn't working."
+
+            Don't immediately say:
+            "The internet is down."
+
+            Instead, think:
+            Can I resolve the domain?
+            ↓
+            DNS
+            ↓
+            Can I reach the server?
+            ↓
+            Network
+            ↓
+            Does HTTPS respond?
+            ↓
+            HTTP/HTTPS
+            ↓
+            What's the status code?
+            ↓
+            200? 401? 403? 404? 500?
+            ↓
+            Investigate the appropriate layer
+
+            This is exactly the type of thinking that will help you in Application Support.
+            🧠 One very important distinction
+            Memorize this:
+            DNS problem
+            ↓
+            Can't resolve the name
+
+            Network problem
+            ↓
+            Can't reach the destination
+
+            HTTP problem
+            ↓
+            Can reach server, but HTTP request has a problem
+
+            Application problem
+            ↓
+            Server responds, but the application itself has an error
+
+            For example:
+            nslookup ❌
+            ↓
+            Likely DNS issue
+
+            nslookup ✅
+            ping ❌
+            ↓
+            Possible connectivity/routing/firewall issue
+
+            ping ✅
+            curl ❌
+            ↓
+            Possible HTTP/HTTPS/server/application issue
+
+            curl → 500
+            ↓
+            Server-side application problem
+
+            That last part is very important for your future role.
+            🎯 Your next challenge
+            Let's test one more thing before moving on.
+            Run:
+            curl -I https://www.google.com
+
+            again and look at the very first line.
+            It should be something like:
+            HTTP/2 200
+
+            Tell me only the first line.
+            Then I'll teach you HTTP status codes — 200, 301, 400, 401, 403, 404, 500, 502 and 503.
+            Those are must-know concepts for an Application Support interview.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            shivam@Shivams-MacBook-Air ~ % curl -I https://www.google.com
+            HTTP/2 200 
+            content-type: text/html; charset=ISO-8859-1
+            content-security-policy-report-only: object-src 'none';base-uri 'self';script-src
+            'nonce-ZYoeyPdlk-VjAEi2D9ZeLg' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https:
+            http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp
+            accept-ch: Sec-CH-Prefers-Color-Scheme
+            p3p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+            date: Tue, 06 Oct 2026 05:08:37 GMT
+            server: gws
+            x-xss-protection: 0
+            x-frame-options: SAMEORIGIN
+            expires: Tue, 06 Oct 2026 05:08:37 GMT
+            cache-control: private
+            set-cookie:
+            __Secure-STRP=ABNhA6gRpQSayVAWI9Q2ZSMwG2hMp-Mn-rcIb1ZRgMTjTuYUyY8VG--NRqHH5T712eZwyjuuEMZRKo1L6JysE1u6NTBDSytDzA;
+            expires=Tue, 06-Oct-2026 05:13:37 GMT; path=/; domain=.google.com; Secure; SameSite=strict
+            set-cookie: AEC=Aaa9EJqZ0un1DUW-sRusw1ZhV-vzr_tUikwK2v92IYkASvDL_PcsUz35gbE; expires=Sun, 04-Apr-2027
+            05:08:37 GMT; path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax
+            set-cookie:
+            NID=Cu4BCAESoAEBOxGDSF1tvA-TxDbVp3sGwyl2Z59kgKEeA6yVSi9rYOoac8SBijUqmRADFExL5zH6d6z1_-nsWAKrqIeE32pdTq96NQ8oE24_18hdpnMT5udm5MoA-cyU-80qgBSOqDaSAR-kpBGn6_QB1-hgCHwYjEZ29Dce7Ha-pjT3OxuPloVtDsrcCxI4EwpJEcfA-YY8kCmB9BsnNGOoOpj-_Z0OKAEyRQHSrAfPiIeOUnSSWl5gfZyTOeKAPo9WZH8eMbu_6bFu4we8dan9rZuUrDZDUfLei-BKN5wdXQ5nzYRRKlnYtvJnM4JUCA;
+            expires=Wed, 07-Apr-2027 05:08:37 GMT; path=/; domain=.google.com; HttpOnly
+            alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            Perfect. The most important line is:
+            HTTP/2 200
+
+            That means your request to Google's HTTPS server was successful. ✅
+            Also, one security note: your output contains live Set-Cookie values. Don't share those values publicly;
+            next time you can paste everything except the cookie values.
+            Lesson 2 — HTTP Status Codes
+            As an Application Support Engineer, HTTP status codes are extremely important.
+            When an application makes an API request, the server returns a status code telling you roughly what
+            happened.
+            The easiest way to learn them is by groups.
+
+            1. 2xx — Success ✅
+            200 OK
+            HTTP/2 200
+
+            Means:
+            The request was successful.
+
+            For example:
+            GET /api/users
+            ↓
+            Server
+            ↓
+            200 OK
+
+            This is what you just received from Google.
+            201 Created
+            Usually returned when something has been successfully created.
+            For example:
+            POST /api/users
+
+            Response:
+            201 Created
+
+            Meaning:
+            The user was successfully created.
+
+            204 No Content
+            The request succeeded, but there's no content to return.
+            Common example:
+            DELETE /api/users/10
+
+            Response:
+            204 No Content
+
+            Meaning:
+            The operation succeeded, but there is no response body.
+
+            2. 3xx — Redirection ↪️
+            These mean the client needs to take some additional action, often following a different URL.
+            301 Moved Permanently
+            The resource has permanently moved.
+            For example:
+            oldwebsite.com
+            ↓
+            301
+            ↓
+            newwebsite.com
+
+            302 Found
+            A temporary redirect.
+            You may encounter these when dealing with:
+            - login systems
+            - websites
+            - authentication
+            - redirects
+            3. 4xx — Client-side/request problem ❌
+            This group is very important for Application Support.
+            It generally means there is something wrong with the request or the client's authorization.
+            400 Bad Request
+            The server couldn't understand/process the request because the request was invalid.
+            Example:
+            POST /api/users
+
+            You send:
+            {
+            "name":
+            }
+
+            Invalid JSON.
+            Server:
+            400 Bad Request
+
+            Think:
+            "Your request is malformed or invalid."
+
+            401 Unauthorized
+            This usually means:
+            You are not properly authenticated.
+
+            For example:
+            GET /api/profile
+            Authorization: Bearer <invalid /expired token>
+
+                Server:
+                401 Unauthorized
+
+                Common causes:
+                - missing token
+                - expired token
+                - invalid token
+                - not logged in
+                Easy memory trick
+                401 → "Who are you?"
+
+                403 Forbidden
+                This is different.
+                The server understands who you are, but you're not allowed to access the resource.
+                Example:
+                User
+                ↓
+                Authenticated ✅
+                ↓
+                Admin page
+                ↓
+                Permission ❌
+                ↓
+                403 Forbidden
+
+                Easy memory trick:
+                401 → Authentication problem
+                403 → Permission problem
+
+                This distinction is very commonly asked in interviews.
+                404 Not Found
+                The requested resource couldn't be found.
+                Example:
+                GET /api/users/999999
+
+                If that user doesn't exist:
+                404 Not Found
+
+                Or:
+                GET /api/products/abc
+
+                if that endpoint doesn't exist.
+                Think:
+                "The thing you're asking for wasn't found."
+
+                4. 5xx — Server-side problem 🚨
+                This group is extremely important for Application Support because you'll often need to determine whether
+                the problem is on the client side or server side.
+                500 Internal Server Error
+                The server encountered an unexpected problem.
+                Example:
+                Frontend
+                ↓
+                API
+                ↓
+                Backend
+                ↓
+                Database
+                ↓
+                Something crashes
+                ↓
+                500
+
+                Possible causes:
+                - backend exception
+                - database failure
+                - programming bug
+                - unexpected server condition
+                If a user reports:
+                "The application gives 500 when I click Submit."
+
+                You would investigate:
+                - API request
+                - server logs
+                - backend error
+                - database
+                - request parameters
+                502 Bad Gateway
+                Usually means a server acting as a gateway/proxy received an invalid response from an upstream server.
+                Think:
+                Browser
+                ↓
+                Load Balancer / Proxy
+                ↓
+                Backend Server
+                ↓
+                ❌ Problem
+
+                The middle server may return:
+                502 Bad Gateway
+
+                503 Service Unavailable
+                The server is currently unable to handle the request.
+                Possible reasons:
+                - server overloaded
+                - maintenance
+                - service temporarily unavailable
+                - backend service down
+                Think:
+                "The service isn't available right now."
+
+                🧠 Memorize this table
+                You don't need to memorize every HTTP code in existence.
+                For your target job, start with these:
+                Code Meaning Think
+                200 OK Success
+                201 Created Created something
+                204 No Content Success, no body
+                301 Moved Permanently Redirect
+                302 Temporary redirect Redirect
+                400 Bad Request Invalid request
+                401 Unauthorized Authentication
+                403 Forbidden Permission
+                404 Not Found Resource missing
+                500 Internal Server Error Backend/server error
+                502 Bad Gateway Upstream problem
+                503 Service Unavailable Service unavailable
+
+
+                🔥 A real Application Support scenario
+                Imagine your company has:
+                https://company.com
+
+                A user says:
+                "I can open the website, but I can't see my profile."
+
+                You open DevTools → Network.
+                You see:
+                GET /api/profile
+                Status: 401
+
+                You should think:
+                401
+                ↓
+                Authentication
+                ↓
+                Check login/token/session
+
+                Another user says:
+                "I'm logged in, but I can't access the admin page."
+
+                You see:
+                GET /api/admin
+                Status: 403
+
+                Think:
+                403
+                ↓
+                Permission
+                ↓
+                Check user's role/access
+
+                Another user says:
+                "The Submit button gives an error."
+
+                You see:
+                POST /api/orders
+                Status: 500
+
+                Think:
+                500
+                ↓
+                Server-side problem
+                ↓
+                Check logs/backend/database
+
+                This is the kind of reasoning I want you to practice.
+                🎯 Your first interview question
+                Don't look at the answer.
+                Question:
+                A user reports:
+                "I am able to log into the application, but when I try to access the admin dashboard, I get HTTP 403."
+
+                What does 403 mean, and what would you check?
+                Answer in your own words.
+                After you answer, I'll correct it if necessary and then we'll move to Lesson 3: IP Address,
+                Private/Public IP, Subnet Mask, and Default Gateway.
